@@ -7,9 +7,11 @@ location-aware lists + simple distance calculation with geohashes and ruby/redis
 
 http://en.wikipedia.org/wiki/Geohash
 
+---
 
-using redis_geohash
--------------------
+### using redis_geohash
+
+`RedisGeohash.connect!` is only necessary if you want to use LookupTables.
 
 ```ruby
 require "redis"
@@ -19,8 +21,11 @@ my_redis = Redis.new
 RedisGeohash.connect!(my_redis)
 ```
 
-location aware lists
---------------------
+---
+
+### location aware lists
+
+Every `RedisGeohash::LookupTable` will create 8 redis-keys (hashes). Precision can be 0-8. Use `:no_reverse_lookup => true` to disable the second lookup pass (much faster, less acurate).
 
 ```ruby
 # create a namespace
@@ -33,10 +38,16 @@ geo_tbl.store!(:id => '55552323', :lat => ..., :lng => ...)
 # do a radius/grid search
 geo_tbl.lookup(:lat => ..., :lng => ..., :precision => 4)
 # => ['23422342', '55552323', ...]
-```
 
-creating hashes manually
-------------------------
+# do a fast radius/grid search
+geo_tbl.lookup(:lat => ..., :lng => ..., :precision => 4, :no_reverse_lookup => true)
+# => ['23422342', '55552323', ...]
+```
+---
+
+### creating hashes manually
+
+Hashes can be created without a redis connection
 
 ```ruby
 geo_hash = RedisGeohash::GeoHash.new(:lat => ..., :lng => ...)
@@ -44,9 +55,11 @@ geo_hash = RedisGeohash::GeoHash.new(:lat => ..., :lng => ...)
 geo_hash.geohash
 # "xqas7askfvsda6s"
 ```
+---
 
-bonus: distance calculation
----------------------------
+### bonus: distance calculation
+
+Pass in two lat/lng-hashes or two `RedisGeohash::GeoHash` objects.
 
 ```ruby
 RedisGeohash.distance({:lat => ..., :lng => ...}, {:lat => ..., :lng => ...})
@@ -65,6 +78,16 @@ Installation
 or in your Gemfile:
 
     gem 'redis_geohash', '~> 0.1'
+
+
+Caveats
+-------
++ There is currently no (atomic) way to remove ids from a table
+
+
+Documentation
+-------------
+
 
 
 License
