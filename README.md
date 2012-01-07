@@ -50,10 +50,20 @@ geo_tbl.lookup(:lat => ..., :lng => ..., :precision => 4, :no_reverse_lookup => 
 Hashes can be created without a redis connection
 
 ```ruby
+# create from lat/lng
 geo_hash = RedisGeohash::GeoHash.new(:lat => ..., :lng => ...)
 
+# create from geohash string
+geo_hash = RedisGeohash::GeoHash.new("u33dc1f0j1nqg")
+
 geo_hash.geohash
-# "xqas7askfvsda6s"
+# => "u33dc1f0j1nqg"
+
+geo_hash.coordinates
+# => {:lat => ..., :lng => ...}
+
+geo_hash.adjacents
+# => [<GeoHash geohash="...">, <GeoHash geohash="...">, ...]
 ```
 ---
 
@@ -83,11 +93,6 @@ or in your Gemfile:
 Caveats
 -------
 + There is currently no (atomic) way to remove ids from a table
-
-
-Documentation
--------------
-
 
 
 License
