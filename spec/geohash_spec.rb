@@ -56,7 +56,10 @@ describe RedisGeohash::Geohash do
 
       it "should calculate the binary representation of a value" 
 
-      it "should convert the decimal to binary"
+      it "should convert the decimal to binary" do
+        gh = RedisGeohash::Geohash.new
+        val = gh.send(:value_encode, 42.6, (-90..90)).should == [1,0,1,1,1,1,0,0,1,0,0,1]
+      end
 
     end
 

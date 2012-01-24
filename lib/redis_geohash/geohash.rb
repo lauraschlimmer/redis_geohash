@@ -17,14 +17,19 @@ private
   end
 
   def value_approximate(arr, approx)
-    arr.each do |b|          
+    arr.each do |b|
       approx = (b==1) ? (approx.avg..approx.max) : (approx.min..approx.avg)
     end
     approx.avg       
   end
 
-  def value_encode
-
+  def value_encode(val, approx)
+    [].tap do |arr|
+      12.times.map do
+        arr.push(val > approx.avg ? 1 : 0)
+        approx = (arr[-1]==1) ? (approx.avg..approx.max) : (approx.min..approx.avg)
+      end
+    end
   end
 
   def dict_translate_string(str)
