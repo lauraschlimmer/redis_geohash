@@ -9,11 +9,18 @@ describe RedisGeohash::Geohash do
   describe "hash en/decoding" do
 
     describe "decoding" do
-
           
       it "should translate a string with the correct dictionary" do
         gh = RedisGeohash::Geohash.new
         gh.send(:dict_translate_string, "ezs42").should == [13, 31, 24, 4, 2]
+      end
+
+      it "should de-mutiplex the binary data" do
+        gh = RedisGeohash::Geohash.new
+        gh.send(:binary_demultiplex, [13, 31, 24, 4, 2]).should == [
+          [0,1,1,1,1,1,0,0,0,0,0,0,0],
+          [1,0,1,1,1,1,0,0,1,0,0,1]
+        ]
       end
 
       it "should convert the binary to decimal"
@@ -26,6 +33,8 @@ describe RedisGeohash::Geohash do
         gh = RedisGeohash::Geohash.new
         gh.send(:dict_translate_binary, [13, 31, 24, 4, 2]).should == "ezs42"
       end
+
+      it "should multiplex the binary data streams (lat/lng)"
 
       it "should convert the decimal to binary"
 
