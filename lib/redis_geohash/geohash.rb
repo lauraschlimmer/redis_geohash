@@ -1,12 +1,31 @@
 class RedisGeohash::Geohash
 
-  DICTIONARY = "0123456789bcdefghjkmnpqrstuvwxyz"
+  DICTIONARY = "0123456789bcdefghjkmnpqrstuvwxyz".freeze
 
   def initialize(opts={})
 
   end
 
 private
+
+  def geohash_decode(str)
+    bins = binary_demultiplex(dict_translate_string(str))
+    {
+      :lat => value_approximate(bins[1], (-90..90)),
+      :lng => value_approximate(bins[0], (-180..180))
+    }
+  end
+
+  def value_approximate(arr, approx)
+    arr.each do |b|          
+      approx = (b==1) ? (approx.avg..approx.max) : (approx.min..approx.avg)
+    end
+    approx.avg       
+  end
+
+  def value_encode
+
+  end
 
   def dict_translate_string(str)
     str.each_char.map{ |c| DICTIONARY.index(c) }
@@ -22,9 +41,10 @@ private
 
   def binary_demultiplex(arr)
     [[],[]].tap do |out|
-      arr.map do |n|
+      bitstream = arr.map do |n|
         ("00000"+n.to_s(2))[-5..-1]
-      end.join("").each_char.each_with_index do |c,i|
+      end.join("").each_char
+      bitstream.each_with_index do |c,i|
         out[i%2] << c.to_i
       end
     end
