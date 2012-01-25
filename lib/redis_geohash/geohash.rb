@@ -30,13 +30,13 @@ private
     approx.avg       
   end
 
-  def value_encode(val, approx)
-    [].tap do |arr|
-      12.times.map do
-        arr.push(val > approx.avg ? 1 : 0)
-        approx = (arr[-1]==1) ? (approx.avg..approx.max) : (approx.min..approx.avg)
-      end
-    end
+  def value_encode(val, approx, n=12)    
+    return nil if n == 0      
+    if val > approx.avg 
+      [1, value_encode(val, (approx.avg..approx.max), n-1)]
+    else
+      [0, value_encode(val, (approx.min..approx.avg), n-1)]
+    end.flatten.compact
   end
 
   def dict_translate_string(str)
