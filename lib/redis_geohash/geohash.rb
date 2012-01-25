@@ -16,6 +16,13 @@ private
     }
   end
 
+  def geohash_encode(lat, lng)
+    dict_translate_binary(binary_multiplex(
+      value_encode(lng, (-180..180)), 
+      value_encode(lat, (-90..90))
+    ))
+  end
+
   def value_approximate(arr, approx)
     arr.each do |b|
       approx = (b==1) ? (approx.avg..approx.max) : (approx.min..approx.avg)
@@ -41,7 +48,13 @@ private
   end
 
   def binary_multiplex(arr1, arr2)
-
+    bitstream = ""
+    (arr1.length+arr2.length).times do |i|
+      bitstream += (i%2==0 ? arr1.shift : arr2.shift).to_s
+    end
+    (bitstream.length/5.0).ceil.times.map do |i|
+      bitstream[i*5..((i+1)*5)-1].to_i(2)
+    end
   end
 
   def binary_demultiplex(arr)

@@ -23,10 +23,16 @@ describe RedisGeohash::Geohash do
         ]
       end
 
-      it "should approximate the value of a binary representation" do
+      it "should approximate the value of a binary representation (1/2)" do
         gh = RedisGeohash::Geohash.new
         val = gh.send(:value_approximate, [1,0,1,1,1,1,0,0,1,0,0,1], (-90..90))
         val.round(1).should == 42.6
+      end
+
+      it "should approximate the value of a binary representation (2/2)" do
+        gh = RedisGeohash::Geohash.new
+        val = gh.send(:value_approximate, [0,1,1,1,1,1,0,0,0,0,0,0,0], (-180..180))
+        val.round(1).should == -5.6
       end
 
       it "should convert the hash (string) to lat/lng (1/2)" do
@@ -47,23 +53,47 @@ describe RedisGeohash::Geohash do
 
     describe "encoding" do
 
+      it "should convert the decimal to binary (1/2)" do
+        gh = RedisGeohash::Geohash.new
+        val = gh.send(:value_encode, 42.6, (-90..90)).should == [1,0,1,1,1,1,0,0,1,0,0,1]
+      end
+
+      it "should convert the decimal to binary (1/2)" do
+        gh = RedisGeohash::Geohash.new
+        # FIXME: length 10 or 12 ?
+        val = gh.send(:value_encode, -5.6, (-180..180)).should == [0,1,1,1,1,1,0,0,0,0,0,0]
+      end
+
+      it "should multiplex the binary data streams (lat/lng)" do
+        gh = RedisGeohash::Geohash.new
+        gh.send(:binary_multiplex, [0,1,1,1,1,1,0,0,0,0,0,0,0], [1,0,1,1,1,1,0,0,1,0,0,1]).should == [13, 31, 24, 4, 2]
+      end
+
       it "should translate binary data with the correct dictionary" do
         gh = RedisGeohash::Geohash.new
         gh.send(:dict_translate_binary, [13, 31, 24, 4, 2]).should == "ezs42"
       end
 
-      it "should multiplex the binary data streams (lat/lng)"
-
-      it "should calculate the binary representation of a value" 
-
-      it "should convert the decimal to binary" do
+      it "should calculate the geohash for a lat/lng pair" do
         gh = RedisGeohash::Geohash.new
-        val = gh.send(:value_encode, 42.6, (-90..90)).should == [1,0,1,1,1,1,0,0,1,0,0,1]
+        gh.send(:geohash_encode, 42.6, -5.6).should == "ezs41"
       end
+
 
     end
 
     describe "example: cologne" do
+
+      it "should calculate the geohash for cologne" do
+        gh = RedisGeohash::Geohash.new
+        gh.send(:geohash_encode, 50.958087, 6.920449).should == "u1hce"
+      end
+
+      it "should calculate the geohash for cologne" do
+        pending("why u no longer?")
+        gh = RedisGeohash::Geohash.new
+        gh.send(:geohash_encode, 50.958087, 6.920449).should == "u1hcvkxk65v5"
+      end
 
       it "should calculate the correct hash for cologne :)" do
         pending("todo!")
