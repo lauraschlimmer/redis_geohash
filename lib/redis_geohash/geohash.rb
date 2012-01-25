@@ -40,10 +40,12 @@ private
   # approximate the decimal value of a binary lat or lng representation
   # second parameter is (-90..90) for lat and (-180..180) for lng
   def value_approximate(arr, approx)
-    arr.each do |b|
-      approx = (b==1) ? (approx.avg..approx.max) : (approx.min..approx.avg)
-    end
-    approx.avg       
+    return approx.avg if arr.length == 0
+    if arr[0] == 1
+      value_approximate(arr[1..-1], (approx.avg..approx.max))
+    else
+      value_approximate(arr[1..-1], (approx.min..approx.avg))
+    end   
   end
 
   # calculate a 12-bit binary representation of a decimal lat or lng value
