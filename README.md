@@ -95,6 +95,11 @@ Caveats
 + There is currently no (atomic) way to remove ids from a table
 
 
+Todos
+-----
++ remove range monkeypatch
+
+
 License
 -------
 
