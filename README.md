@@ -13,6 +13,7 @@ http://en.wikipedia.org/wiki/Geohash
 
 `RedisGeohash.connect!` is only necessary if you want to use LookupTables.
 
+
 ```ruby
 require "redis"
 require "redis_geohash"
@@ -20,7 +21,6 @@ require "redis_geohash"
 my_redis = Redis.new
 RedisGeohash.connect!(my_redis)
 ```
-
 ---
 
 ### location aware lists
