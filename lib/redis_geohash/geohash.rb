@@ -50,7 +50,7 @@ private
 
   # calculate a 12-bit binary representation of a decimal lat or lng value
   # second parameter is (-90..90) for lat and (-180..180) for lng
-  def value_encode(val, approx, n=12)    
+  def value_encode(val, approx, n=28)    
     return nil if n == 0      
     if val > approx.avg 
       [1, value_encode(val, (approx.avg..approx.max), n-1)]
