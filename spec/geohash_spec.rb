@@ -2,6 +2,33 @@ require ::File.expand_path('../spec_helper', __FILE__)
 
 describe RedisGeohash::Geohash do
 
+
+  it "should remember it's lat/lng when initialized" do
+    gh = RedisGeohash::Geohash.new(:lat => 50.958087, :lng => 6.920449)
+    gh.lat.should == 50.958087
+    gh.lng.should == 6.920449
+  end
+
+  it "should calculate the geohash on demand unless calculated" do
+    gh = RedisGeohash::Geohash.new(:lat => 50.958087, :lng => 6.920449)
+    gh.instance_variable_get(:@geohash).should == nil
+    gh.should_receive(:geohash_encode)
+    gh.geohash
+  end
+
+  it "should calculate the correct geohash on demand unless calculated" do
+    gh = RedisGeohash::Geohash.new(:lat => 50.958087, :lng => 6.920449)
+    gh.instance_variable_get(:@geohash).should == nil
+    gh.geohash.should == "u1hcvkxk65u1"
+  end
+
+  it "should re-calculate the geohash if already calculated" do
+    gh = RedisGeohash::Geohash.new(:lat => 50.958087, :lng => 6.920449)
+    gh.instance_variable_set(:@geohash, "foobar")
+    gh.should_not_receive(:geohash_encode)
+    gh.geohash.should == "foobar"
+  end
+
   describe "adjacent buckets" do
     it "should find adjacent buckets"
   end
@@ -90,17 +117,8 @@ describe RedisGeohash::Geohash do
       end
 
       it "should calculate the correct hash for cologne :)" do
-        pending("todo!")
         gh = RedisGeohash::Geohash.new(:lat => 50.958087, :lng => 6.920449)
-        gh.geohash.should == "u1hcvkxk65v5"
-      end
-
-      it "should calculate the correct hash for cologne with precision" do
-        pending("todo!")
-        gh = RedisGeohash::Geohash.new(:lat => 50.958087, :lng => 6.920449)
-        gh.geohash(5).should == "u1hcv"
-        gh.geohash(8).should == "u1hcvkxk"
-        gh.geohash(3).should == "u1h"
+        gh.geohash.should == "u1hcvkxk65u1"
       end
 
     end

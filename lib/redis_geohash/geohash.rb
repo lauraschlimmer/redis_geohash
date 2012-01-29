@@ -2,8 +2,15 @@ class RedisGeohash::Geohash
 
   DICTIONARY = "0123456789bcdefghjkmnpqrstuvwxyz".freeze
 
-  def initialize(opts={})
+  attr_reader :lat, :lng
 
+  def initialize(opts={})
+    @lat = opts[:lat] if opts[:lat]
+    @lng = opts[:lng] if opts[:lng]
+  end
+
+  def geohash
+    @geohash ||= geohash_encode(@lat, @lng)
   end
 
 private
